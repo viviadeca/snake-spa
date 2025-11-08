@@ -49,6 +49,7 @@ const SnakeGame = () => {
         newDirection &&
         !isOppositeDirection(gameState.direction, newDirection)
       ) {
+        e.preventDefault(); // Prevent page scrolling
         setGameState((prev) => ({ ...prev, nextDirection: newDirection }));
       }
     };
