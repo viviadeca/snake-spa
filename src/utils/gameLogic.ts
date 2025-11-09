@@ -1,6 +1,18 @@
 // Core game logic utilities
 
-import type { Direction, Position, GameSettings } from '../types/game';
+import type { Direction, Position, GameSettings, Food, FoodType } from '../types/game';
+
+// Food type definitions with their visual representations and scores
+export const FOOD_TYPES: Record<FoodType, { emoji: string; score: number }> = {
+  apple: { emoji: '🍎', score: 10 },
+  banana: { emoji: '🍌', score: 10 },
+  cherry: { emoji: '🍒', score: 15 },
+  strawberry: { emoji: '🍓', score: 10 },
+  watermelon: { emoji: '🍉', score: 15 },
+  steak: { emoji: '🥩', score: 20 },
+  chicken: { emoji: '🍗', score: 20 },
+  fish: { emoji: '🐟', score: 20 },
+};
 
 export const INITIAL_SNAKE: Position[] = [
   { x: 10, y: 10 },
@@ -37,6 +49,25 @@ export function getRandomPosition(gridSize: number, snake: Position[]): Position
   );
 
   return position;
+}
+
+export function getRandomFoodType(): FoodType {
+  const foodTypes: FoodType[] = Object.keys(FOOD_TYPES) as FoodType[];
+  const randomIndex = Math.floor(Math.random() * foodTypes.length);
+  return foodTypes[randomIndex];
+}
+
+export function generateFood(gridSize: number, snake: Position[]): Food {
+  const position = getRandomPosition(gridSize, snake);
+  const type = getRandomFoodType();
+  const { emoji, score } = FOOD_TYPES[type];
+  
+  return {
+    position,
+    type,
+    emoji,
+    score,
+  };
 }
 
 export function getNextHeadPosition(
@@ -83,6 +114,6 @@ export function checkCollision(
     .some((segment) => segment.x === head.x && segment.y === head.y);
 }
 
-export function checkFoodCollision(head: Position, food: Position): boolean {
-  return head.x === food.x && head.y === food.y;
+export function checkFoodCollision(head: Position, food: Food): boolean {
+  return head.x === food.position.x && head.y === food.position.y;
 }
