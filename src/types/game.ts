@@ -14,6 +14,7 @@ export interface GameSettings {
   foodColor: string;
   gridColor: string;
   backgroundColor: string;
+  soundEnabled: boolean;
 }
 
 export type GameStatus = 'idle' | 'playing' | 'paused' | 'gameOver';

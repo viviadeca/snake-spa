@@ -17,6 +17,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
   foodColor: '#ef4444',
   gridColor: '#374151',
   backgroundColor: '#1f2937',
+  soundEnabled: true,
 };
 
 export function getRandomPosition(gridSize: number, snake: Position[]): Position {
