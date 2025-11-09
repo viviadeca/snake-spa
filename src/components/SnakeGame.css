@@ -4,6 +4,39 @@
   padding: 2rem;
 }
 
+.snake-game.fullscreen {
+  max-width: 100%;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #242424;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.snake-game.fullscreen .game-container {
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.snake-game.fullscreen .game-canvas-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.snake-game.fullscreen .game-sidebar.hidden {
+  display: none;
+}
+
 .snake-game h1 {
   text-align: center;
   font-size: 3rem;
@@ -144,6 +177,48 @@
 
 .btn-danger:hover {
   background-color: #dc2626;
+}
+
+.btn-fullscreen {
+  background-color: #8b5cf6;
+  color: white;
+}
+
+.btn-fullscreen:hover {
+  background-color: #7c3aed;
+}
+
+.btn-exit-fullscreen {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.fullscreen-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.fullscreen-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.score-display-inline {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4ade80;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  background-color: #374151;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
 }
 
 .setting-group {

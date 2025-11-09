@@ -18,6 +18,7 @@ import './SnakeGame.css';
 
 const SnakeGame = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gameContainerRef = useRef<HTMLDivElement>(null);
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [gameState, setGameState] = useState<GameState>({
     snake: INITIAL_SNAKE,
@@ -27,36 +28,143 @@ const SnakeGame = () => {
     score: 0,
     status: 'idle',
   });
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
 
-  // Handle keyboard input
+  // Handle fullscreen change events
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (gameState.status !== 'playing') return;
-
-      const keyMap: Record<string, Direction> = {
-        ArrowUp: 'UP',
-        KeyW: 'UP',
-        ArrowDown: 'DOWN',
-        KeyS: 'DOWN',
-        ArrowLeft: 'LEFT',
-        KeyA: 'LEFT',
-        ArrowRight: 'RIGHT',
-        KeyD: 'RIGHT',
+    const handleFullscreenChange = () => {
+      const docWithFullscreen = document as Document & {
+        webkitFullscreenElement?: Element;
+        mozFullScreenElement?: Element;
+        msFullscreenElement?: Element;
       };
+      
+      const isCurrentlyFullscreen = !!(
+        document.fullscreenElement ||
+        docWithFullscreen.webkitFullscreenElement ||
+        docWithFullscreen.mozFullScreenElement ||
+        docWithFullscreen.msFullscreenElement
+      );
+      setIsFullscreen(isCurrentlyFullscreen);
+    };
 
-      const newDirection = keyMap[e.code];
-      if (
-        newDirection &&
-        !isOppositeDirection(gameState.direction, newDirection)
-      ) {
-        e.preventDefault(); // Prevent page scrolling
-        setGameState((prev) => ({ ...prev, nextDirection: newDirection }));
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
+  }, []);
+
+  // Update canvas size when in fullscreen mode
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      if (isFullscreen && gameContainerRef.current) {
+        const container = gameContainerRef.current;
+        const availableWidth = container.clientWidth;
+        const availableHeight = container.clientHeight;
+        
+        // Calculate the largest square that fits in the viewport
+        const size = Math.min(availableWidth, availableHeight) - 40; // 40px padding
+        setCanvasSize({ width: size, height: size });
+      } else {
+        setCanvasSize({ width: 600, height: 600 });
       }
     };
 
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+    return () => window.removeEventListener('resize', updateCanvasSize);
+  }, [isFullscreen]);
+
+  const toggleFullscreen = useCallback(async () => {
+    if (!gameContainerRef.current) return;
+
+    interface FullscreenElement extends HTMLElement {
+      webkitRequestFullscreen?: () => Promise<void>;
+      mozRequestFullScreen?: () => Promise<void>;
+      msRequestFullscreen?: () => Promise<void>;
+    }
+
+    interface FullscreenDocument extends Document {
+      webkitExitFullscreen?: () => Promise<void>;
+      mozCancelFullScreen?: () => Promise<void>;
+      msExitFullscreen?: () => Promise<void>;
+    }
+
+    try {
+      if (!isFullscreen) {
+        // Enter fullscreen
+        const elem = gameContainerRef.current as FullscreenElement;
+        if (elem.requestFullscreen) {
+          await elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          await elem.webkitRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+          await elem.mozRequestFullScreen();
+        } else if (elem.msRequestFullscreen) {
+          await elem.msRequestFullscreen();
+        }
+      } else {
+        // Exit fullscreen
+        const doc = document as FullscreenDocument;
+        if (doc.exitFullscreen) {
+          await doc.exitFullscreen();
+        } else if (doc.webkitExitFullscreen) {
+          await doc.webkitExitFullscreen();
+        } else if (doc.mozCancelFullScreen) {
+          await doc.mozCancelFullScreen();
+        } else if (doc.msExitFullscreen) {
+          await doc.msExitFullscreen();
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling fullscreen:', error);
+    }
+  }, [isFullscreen]);
+
+  // Handle keyboard input
+  const handleKeyPress = useCallback((e: KeyboardEvent) => {
+    // Toggle fullscreen with 'F' key
+    if (e.code === 'KeyF' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      toggleFullscreen();
+      return;
+    }
+
+    if (gameState.status !== 'playing') return;
+
+    const keyMap: Record<string, Direction> = {
+      ArrowUp: 'UP',
+      KeyW: 'UP',
+      ArrowDown: 'DOWN',
+      KeyS: 'DOWN',
+      ArrowLeft: 'LEFT',
+      KeyA: 'LEFT',
+      ArrowRight: 'RIGHT',
+      KeyD: 'RIGHT',
+    };
+
+    const newDirection = keyMap[e.code];
+    if (
+      newDirection &&
+      !isOppositeDirection(gameState.direction, newDirection)
+    ) {
+      e.preventDefault(); // Prevent page scrolling
+      setGameState((prev) => ({ ...prev, nextDirection: newDirection }));
+    }
+  }, [gameState.status, gameState.direction, toggleFullscreen]);
+
+  useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [gameState.status, gameState.direction]);
+  }, [handleKeyPress]);
 
   // Game loop
   useEffect(() => {
@@ -164,7 +272,7 @@ const SnakeGame = () => {
       Math.PI * 2
     );
     ctx.fill();
-  }, [gameState, settings]);
+  }, [gameState, settings, canvasSize]);
 
   const startGame = useCallback(() => {
     setGameState({
@@ -218,21 +326,51 @@ const SnakeGame = () => {
   };
 
   return (
-    <div className="snake-game">
-      <h1>🐍 Snake Game</h1>
+    <div className={`snake-game ${isFullscreen ? 'fullscreen' : ''}`} ref={gameContainerRef}>
+      {!isFullscreen && <h1>🐍 Snake Game</h1>}
       
       <div className="game-container">
         <div className="game-canvas-wrapper">
           <canvas
             ref={canvasRef}
-            width={600}
-            height={600}
+            width={canvasSize.width}
+            height={canvasSize.height}
             className="game-canvas"
           />
-          <div className="game-status">{getStatusMessage()}</div>
+          {!isFullscreen && <div className="game-status">{getStatusMessage()}</div>}
+          {isFullscreen && (
+            <div className="fullscreen-controls">
+              <div className="score-display-inline">Score: {gameState.score}</div>
+              <div className="fullscreen-buttons">
+                {gameState.status === 'idle' && (
+                  <button onClick={startGame} className="btn btn-primary">
+                    Start Game
+                  </button>
+                )}
+                {(gameState.status === 'playing' || gameState.status === 'paused') && (
+                  <>
+                    <button onClick={pauseGame} className="btn btn-secondary">
+                      {gameState.status === 'playing' ? 'Pause' : 'Resume'}
+                    </button>
+                    <button onClick={resetGame} className="btn btn-danger">
+                      Reset
+                    </button>
+                  </>
+                )}
+                {gameState.status === 'gameOver' && (
+                  <button onClick={startGame} className="btn btn-primary">
+                    Play Again
+                  </button>
+                )}
+                <button onClick={toggleFullscreen} className="btn btn-secondary btn-exit-fullscreen">
+                  Exit Fullscreen (F)
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="game-sidebar">
+        <div className={`game-sidebar ${isFullscreen ? 'hidden' : ''}`}>
           <div className="score-display">
             <h2>Score</h2>
             <div className="score-value">{gameState.score}</div>
@@ -260,6 +398,9 @@ const SnakeGame = () => {
                 Play Again
               </button>
             )}
+            <button onClick={toggleFullscreen} className="btn btn-fullscreen">
+              {isFullscreen ? '⛶ Exit Fullscreen' : '⛶ Fullscreen (F)'}
+            </button>
           </div>
 
           <div className="game-settings">
@@ -326,6 +467,7 @@ const SnakeGame = () => {
               <li>🍎 Eat food to grow and score points</li>
               <li>💥 Avoid walls and your own tail</li>
               <li>🎯 Each food is worth 10 points</li>
+              <li>⛶ Press F to toggle fullscreen</li>
             </ul>
           </div>
         </div>
