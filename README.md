@@ -8,6 +8,52 @@ Single page app with snake game. My first programming project.
 
 The app is automatically deployed to GitHub Pages on every push to the main branch.
 
+## 🎮 Features
+
+- **Classic Snake Gameplay** - Navigate the snake using arrow keys or WASD
+- **Customizable Settings** - Adjust grid size, game speed, snake color, and food color
+- **Fullscreen Mode** - Press F to toggle fullscreen for an immersive experience
+- **Sound Effects** - Enjoy audio feedback for movement, eating food, and game over events
+- **Responsive Design** - Works on desktop and mobile devices
+- **Score Tracking** - Keep track of your high score
+
+## 🔊 Sound Effects
+
+The game includes programmatically generated sound effects for an enhanced gaming experience:
+
+- **Movement Sound** - Subtle click sound when the snake moves
+- **Eating Sound** - Pleasant two-tone sound when food is consumed
+- **Game Over Sound** - Descending tone sequence when the game ends
+
+### Sound Management
+
+- **Toggle Sounds** - Use the "Sound Effects" checkbox in the Settings panel to enable/disable sounds
+- **No Copyright Issues** - All sounds are generated using the Web Audio API, avoiding any copyright concerns
+- **Browser Compatibility** - Sounds work on all modern browsers that support the Web Audio API
+
+### Adding or Customizing Sounds
+
+The sound system is implemented in `src/utils/soundEffects.ts`. To customize sounds:
+
+1. Open `src/utils/soundEffects.ts`
+2. Modify the tone frequencies, durations, and patterns in the respective methods:
+   - `playMoveSound()` - Adjust movement sound
+   - `playEatSound()` - Customize eating sound
+   - `playGameOverSound()` - Change game over sound
+3. Sound parameters:
+   - `frequency` - Tone pitch in Hz (higher = higher pitch)
+   - `duration` - How long the sound plays in seconds
+   - `type` - Waveform type (`'sine'`, `'square'`, `'triangle'`, `'sawtooth'`)
+   - `volume` - Sound volume (0.0 to 1.0)
+
+Example of adding a new sound:
+```typescript
+// In soundEffects.ts
+playCustomSound(): void {
+  this.playTone(440, 0.1, 'sine', 0.15); // Play A4 note for 0.1 seconds
+}
+```
+
 ## 🚀 Project Setup
 
 This project is built with React, TypeScript, and Vite, providing a modern and fast development experience.

@@ -14,6 +14,7 @@ import {
   checkCollision,
   checkFoodCollision,
 } from '../utils/gameLogic';
+import { soundManager } from '../utils/soundEffects';
 import './SnakeGame.css';
 
 const SnakeGame = () => {
@@ -30,6 +31,18 @@ const SnakeGame = () => {
   });
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
+
+  // Sync sound manager with settings
+  useEffect(() => {
+    soundManager.setMuted(!settings.soundEnabled);
+  }, [settings.soundEnabled]);
+
+  // Cleanup sound manager on unmount
+  useEffect(() => {
+    return () => {
+      soundManager.cleanup();
+    };
+  }, []);
 
   // Handle fullscreen change events
   useEffect(() => {
@@ -178,6 +191,7 @@ const SnakeGame = () => {
 
         // Check collision
         if (checkCollision(newHead, prev.snake, settings.gridSize)) {
+          soundManager.play('gameOver');
           return { ...prev, status: 'gameOver' };
         }
 
@@ -187,10 +201,12 @@ const SnakeGame = () => {
 
         // Check food collision
         if (checkFoodCollision(newHead, prev.food)) {
+          soundManager.play('eat');
           newScore += 10;
           newFood = getRandomPosition(settings.gridSize, newSnake);
         } else {
           newSnake.pop(); // Remove tail if no food eaten
+          soundManager.play('move');
         }
 
         return {
@@ -407,6 +423,20 @@ const SnakeGame = () => {
             <h3>Settings</h3>
             
             <div className="setting-group">
+              <label htmlFor="sound-toggle">
+                <input
+                  id="sound-toggle"
+                  type="checkbox"
+                  checked={settings.soundEnabled}
+                  onChange={(e) =>
+                    setSettings((prev) => ({ ...prev, soundEnabled: e.target.checked }))
+                  }
+                />
+                {' '}Sound Effects
+              </label>
+            </div>
+
+            <div className="setting-group">
               <label htmlFor="grid-size">Grid Size: {settings.gridSize}</label>
               <input
                 id="grid-size"
@@ -468,6 +498,7 @@ const SnakeGame = () => {
               <li>💥 Avoid walls and your own tail</li>
               <li>🎯 Each food is worth 10 points</li>
               <li>⛶ Press F to toggle fullscreen</li>
+              <li>🔊 Toggle sound effects in Settings</li>
             </ul>
           </div>
         </div>
