@@ -337,13 +337,35 @@ const SnakeGame = () => {
             height={canvasSize.height}
             className="game-canvas"
           />
-          <div className="game-status">{getStatusMessage()}</div>
+          {!isFullscreen && <div className="game-status">{getStatusMessage()}</div>}
           {isFullscreen && (
             <div className="fullscreen-controls">
               <div className="score-display-inline">Score: {gameState.score}</div>
-              <button onClick={toggleFullscreen} className="btn btn-secondary btn-exit-fullscreen">
-                Exit Fullscreen (F)
-              </button>
+              <div className="fullscreen-buttons">
+                {gameState.status === 'idle' && (
+                  <button onClick={startGame} className="btn btn-primary">
+                    Start Game
+                  </button>
+                )}
+                {(gameState.status === 'playing' || gameState.status === 'paused') && (
+                  <>
+                    <button onClick={pauseGame} className="btn btn-secondary">
+                      {gameState.status === 'playing' ? 'Pause' : 'Resume'}
+                    </button>
+                    <button onClick={resetGame} className="btn btn-danger">
+                      Reset
+                    </button>
+                  </>
+                )}
+                {gameState.status === 'gameOver' && (
+                  <button onClick={startGame} className="btn btn-primary">
+                    Play Again
+                  </button>
+                )}
+                <button onClick={toggleFullscreen} className="btn btn-secondary btn-exit-fullscreen">
+                  Exit Fullscreen (F)
+                </button>
+              </div>
             </div>
           )}
         </div>

@@ -203,6 +203,14 @@
   flex-wrap: wrap;
 }
 
+.fullscreen-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .score-display-inline {
   font-size: 1.5rem;
   font-weight: bold;
