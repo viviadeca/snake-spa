@@ -11,11 +11,33 @@ The app is automatically deployed to GitHub Pages on every push to the main bran
 ## 🎮 Features
 
 - **Classic Snake Gameplay** - Navigate the snake using arrow keys or WASD
+- **Realistic Food Variety** - Multiple food types (fruits and meats) with emoji graphics
+- **Variable Scoring** - Different foods award different points (fruits: 10-15, meats: 20)
 - **Customizable Settings** - Adjust grid size, game speed, snake color, and food color
 - **Fullscreen Mode** - Press F to toggle fullscreen for an immersive experience
 - **Sound Effects** - Enjoy audio feedback for movement, eating food, and game over events
 - **Responsive Design** - Works on desktop and mobile devices
 - **Score Tracking** - Keep track of your high score
+
+## 🍎 Food System
+
+The game features a variety of realistic food types that appear randomly during gameplay:
+
+### Food Types and Scoring
+
+- **Fruits** (10-15 points each):
+  - 🍎 Apple - 10 points
+  - 🍌 Banana - 10 points
+  - 🍓 Strawberry - 10 points
+  - 🍒 Cherry - 15 points
+  - 🍉 Watermelon - 15 points
+
+- **Meats** (20 points each):
+  - 🥩 Steak - 20 points
+  - 🍗 Chicken - 20 points
+  - 🐟 Fish - 20 points
+
+Each time the snake eats food, a new randomly-selected food type appears on the grid. The visual emojis make the game more engaging and realistic!
 
 ## 🔊 Sound Effects
 
