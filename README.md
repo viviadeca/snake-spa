@@ -11,9 +11,10 @@ The app is automatically deployed to GitHub Pages on every push to the main bran
 ## 🎮 Features
 
 - **Classic Snake Gameplay** - Navigate the snake using arrow keys or WASD
+- **Multiple Food Types** - Collect apples, berries, meat, and cheese, each with unique sounds and visuals
 - **Customizable Settings** - Adjust grid size, game speed, snake color, and food color
 - **Fullscreen Mode** - Press F to toggle fullscreen for an immersive experience
-- **Sound Effects** - Enjoy audio feedback for movement, eating food, and game over events
+- **Sound Effects** - Enjoy unique audio feedback for each food type, movement, and game over events
 - **Responsive Design** - Works on desktop and mobile devices
 - **Score Tracking** - Keep track of your high score
 
@@ -22,7 +23,11 @@ The app is automatically deployed to GitHub Pages on every push to the main bran
 The game includes programmatically generated sound effects for an enhanced gaming experience:
 
 - **Movement Sound** - Subtle click sound when the snake moves
-- **Eating Sound** - Pleasant two-tone sound when food is consumed
+- **Food Sound Effects** - Unique sounds for each food type:
+  - **Apple** - Crisp, bright bite sound (high-pitched)
+  - **Berry** - Soft, gentle triple-tone pop
+  - **Meat** - Sizzling sound with lower frequencies
+  - **Cheese** - Smooth, mellow warm tones
 - **Game Over Sound** - Descending tone sequence when the game ends
 
 ### Sound Management
@@ -31,28 +36,52 @@ The game includes programmatically generated sound effects for an enhanced gamin
 - **No Copyright Issues** - All sounds are generated using the Web Audio API, avoiding any copyright concerns
 - **Browser Compatibility** - Sounds work on all modern browsers that support the Web Audio API
 
-### Adding or Customizing Sounds
+### Adding New Food Types and Sounds
 
-The sound system is implemented in `src/utils/soundEffects.ts`. To customize sounds:
+The sound system is implemented in `src/utils/soundEffects.ts`. To add a new food type with its own sound:
 
-1. Open `src/utils/soundEffects.ts`
-2. Modify the tone frequencies, durations, and patterns in the respective methods:
-   - `playMoveSound()` - Adjust movement sound
-   - `playEatSound()` - Customize eating sound
-   - `playGameOverSound()` - Change game over sound
-3. Sound parameters:
-   - `frequency` - Tone pitch in Hz (higher = higher pitch)
-   - `duration` - How long the sound plays in seconds
-   - `type` - Waveform type (`'sine'`, `'square'`, `'triangle'`, `'sawtooth'`)
-   - `volume` - Sound volume (0.0 to 1.0)
+1. **Define the food type** in `src/types/game.ts`:
+   ```typescript
+   export type FoodType = 'apple' | 'berry' | 'meat' | 'cheese' | 'newtype';
+   ```
 
-Example of adding a new sound:
-```typescript
-// In soundEffects.ts
-playCustomSound(): void {
-  this.playTone(440, 0.1, 'sine', 0.15); // Play A4 note for 0.1 seconds
-}
-```
+2. **Add the food type to the list** in `src/utils/gameLogic.ts`:
+   ```typescript
+   const FOOD_TYPES: FoodType[] = ['apple', 'berry', 'meat', 'cheese', 'newtype'];
+   ```
+
+3. **Create a sound method** in `src/utils/soundEffects.ts`:
+   ```typescript
+   playNewTypeSound(): void {
+     this.playMultiTone([
+       { frequency: 440, duration: 0.1, delay: 0, type: 'sine', volume: 0.12 },
+       { frequency: 554.37, duration: 0.12, delay: 60, type: 'sine', volume: 0.12 },
+     ]);
+   }
+   ```
+
+4. **Add the case to playFoodSound()** in `src/utils/soundEffects.ts`:
+   ```typescript
+   case 'newtype':
+     this.playNewTypeSound();
+     break;
+   ```
+
+5. **Add visual styling** in `src/components/SnakeGame.tsx` in the food rendering section:
+   ```typescript
+   case 'newtype':
+     ctx.fillStyle = '#hexcolor'; // Choose a color
+     // Add visual details after drawing the circle
+     break;
+   ```
+
+### Sound Parameters
+
+- `frequency` - Tone pitch in Hz (higher = higher pitch)
+- `duration` - How long the sound plays in seconds
+- `type` - Waveform type (`'sine'`, `'square'`, `'triangle'`, `'sawtooth'`)
+- `volume` - Sound volume (0.0 to 1.0)
+- `delay` - Delay before playing the tone in milliseconds
 
 ## 🚀 Project Setup
 

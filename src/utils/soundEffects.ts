@@ -2,6 +2,7 @@
 // All sounds are generated programmatically to avoid copyright issues
 
 export type SoundType = 'move' | 'eat' | 'gameOver';
+export type FoodSoundType = 'apple' | 'berry' | 'meat' | 'cheese';
 
 class SoundManager {
   private audioContext: AudioContext | null = null;
@@ -87,11 +88,62 @@ class SoundManager {
   }
 
   playEatSound(): void {
-    // Pleasant two-tone eating sound
+    // Pleasant two-tone eating sound (default/generic)
     this.playMultiTone([
       { frequency: 523.25, duration: 0.08, delay: 0, type: 'sine', volume: 0.15 }, // C5
       { frequency: 659.25, duration: 0.12, delay: 50, type: 'sine', volume: 0.15 }, // E5
     ]);
+  }
+
+  playAppleSound(): void {
+    // Crisp, bright sound for apples - higher pitched bite sound
+    this.playMultiTone([
+      { frequency: 880, duration: 0.05, delay: 0, type: 'sine', volume: 0.12 },     // A5
+      { frequency: 1046.5, duration: 0.08, delay: 30, type: 'triangle', volume: 0.1 }, // C6
+    ]);
+  }
+
+  playBerrySound(): void {
+    // Soft, gentle pop sound for berries - quick triple tone
+    this.playMultiTone([
+      { frequency: 698.46, duration: 0.06, delay: 0, type: 'sine', volume: 0.12 },   // F5
+      { frequency: 783.99, duration: 0.06, delay: 40, type: 'sine', volume: 0.12 },  // G5
+      { frequency: 880, duration: 0.08, delay: 80, type: 'sine', volume: 0.12 },     // A5
+    ]);
+  }
+
+  playMeatSound(): void {
+    // Sizzling sound for meat - lower frequency with slight distortion
+    this.playMultiTone([
+      { frequency: 220, duration: 0.15, delay: 0, type: 'sawtooth', volume: 0.08 },  // A3
+      { frequency: 233.08, duration: 0.12, delay: 50, type: 'sawtooth', volume: 0.08 }, // A#3
+      { frequency: 246.94, duration: 0.1, delay: 90, type: 'sawtooth', volume: 0.06 },  // B3
+    ]);
+  }
+
+  playCheeseSound(): void {
+    // Smooth, mellow sound for cheese - warm tones
+    this.playMultiTone([
+      { frequency: 392, duration: 0.1, delay: 0, type: 'triangle', volume: 0.12 },    // G4
+      { frequency: 440, duration: 0.12, delay: 60, type: 'triangle', volume: 0.12 },  // A4
+    ]);
+  }
+
+  playFoodSound(foodType: FoodSoundType): void {
+    switch (foodType) {
+      case 'apple':
+        this.playAppleSound();
+        break;
+      case 'berry':
+        this.playBerrySound();
+        break;
+      case 'meat':
+        this.playMeatSound();
+        break;
+      case 'cheese':
+        this.playCheeseSound();
+        break;
+    }
   }
 
   playGameOverSound(): void {

@@ -8,7 +8,7 @@ import {
   INITIAL_SNAKE,
   INITIAL_DIRECTION,
   DEFAULT_SETTINGS,
-  getRandomPosition,
+  getRandomFood,
   getNextHeadPosition,
   isOppositeDirection,
   checkCollision,
@@ -23,7 +23,7 @@ const SnakeGame = () => {
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [gameState, setGameState] = useState<GameState>({
     snake: INITIAL_SNAKE,
-    food: getRandomPosition(DEFAULT_SETTINGS.gridSize, INITIAL_SNAKE),
+    food: getRandomFood(DEFAULT_SETTINGS.gridSize, INITIAL_SNAKE),
     direction: INITIAL_DIRECTION,
     nextDirection: INITIAL_DIRECTION,
     score: 0,
@@ -201,9 +201,9 @@ const SnakeGame = () => {
 
         // Check food collision
         if (checkFoodCollision(newHead, prev.food)) {
-          soundManager.play('eat');
+          soundManager.playFoodSound(prev.food.type);
           newScore += 10;
-          newFood = getRandomPosition(settings.gridSize, newSnake);
+          newFood = getRandomFood(settings.gridSize, newSnake);
         } else {
           newSnake.pop(); // Remove tail if no food eaten
           soundManager.play('move');
@@ -275,25 +275,72 @@ const SnakeGame = () => {
       }
     });
 
-    // Draw food
-    ctx.fillStyle = settings.foodColor;
-    const foodX = gameState.food.x * cellSize;
-    const foodY = gameState.food.y * cellSize;
+    // Draw food with type-specific appearance
+    const foodX = gameState.food.position.x * cellSize;
+    const foodY = gameState.food.position.y * cellSize;
+    const centerX = foodX + cellSize / 2;
+    const centerY = foodY + cellSize / 2;
+    
+    // Set color based on food type
+    switch (gameState.food.type) {
+      case 'apple':
+        ctx.fillStyle = '#ef4444'; // Red
+        break;
+      case 'berry':
+        ctx.fillStyle = '#a855f7'; // Purple
+        break;
+      case 'meat':
+        ctx.fillStyle = '#ea580c'; // Orange
+        break;
+      case 'cheese':
+        ctx.fillStyle = '#fbbf24'; // Yellow
+        break;
+    }
+    
+    // Draw food as a circle
     ctx.beginPath();
-    ctx.arc(
-      foodX + cellSize / 2,
-      foodY + cellSize / 2,
-      cellSize / 2 - 2,
-      0,
-      Math.PI * 2
-    );
+    ctx.arc(centerX, centerY, cellSize / 2 - 2, 0, Math.PI * 2);
     ctx.fill();
+    
+    // Add simple emoji-like details for each food type
+    ctx.fillStyle = '#000';
+    const detailSize = cellSize / 8;
+    
+    switch (gameState.food.type) {
+      case 'apple':
+        // Add a small leaf/stem detail at top
+        ctx.fillRect(centerX - detailSize / 2, foodY + 2, detailSize, detailSize * 1.5);
+        break;
+      case 'berry':
+        // Add small dots
+        ctx.fillRect(centerX - detailSize, centerY - detailSize, detailSize, detailSize);
+        ctx.fillRect(centerX + detailSize / 2, centerY - detailSize, detailSize, detailSize);
+        ctx.fillRect(centerX - detailSize / 3, centerY + detailSize, detailSize, detailSize);
+        break;
+      case 'meat':
+        // Add grill marks
+        ctx.fillRect(centerX - cellSize / 3, centerY - cellSize / 5, cellSize / 1.5, 2);
+        ctx.fillRect(centerX - cellSize / 3, centerY + cellSize / 5, cellSize / 1.5, 2);
+        break;
+      case 'cheese':
+        // Add holes
+        ctx.beginPath();
+        ctx.arc(centerX - detailSize, centerY - detailSize, detailSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(centerX + detailSize, centerY, detailSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY + detailSize, detailSize, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+    }
   }, [gameState, settings, canvasSize]);
 
   const startGame = useCallback(() => {
     setGameState({
       snake: INITIAL_SNAKE,
-      food: getRandomPosition(settings.gridSize, INITIAL_SNAKE),
+      food: getRandomFood(settings.gridSize, INITIAL_SNAKE),
       direction: INITIAL_DIRECTION,
       nextDirection: INITIAL_DIRECTION,
       score: 0,
@@ -311,7 +358,7 @@ const SnakeGame = () => {
   const resetGame = useCallback(() => {
     setGameState({
       snake: INITIAL_SNAKE,
-      food: getRandomPosition(settings.gridSize, INITIAL_SNAKE),
+      food: getRandomFood(settings.gridSize, INITIAL_SNAKE),
       direction: INITIAL_DIRECTION,
       nextDirection: INITIAL_DIRECTION,
       score: 0,

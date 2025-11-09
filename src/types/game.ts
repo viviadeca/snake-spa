@@ -7,6 +7,13 @@ export interface Position {
   y: number;
 }
 
+export type FoodType = 'apple' | 'berry' | 'meat' | 'cheese';
+
+export interface Food {
+  position: Position;
+  type: FoodType;
+}
+
 export interface GameSettings {
   gridSize: number;
   gameSpeed: number;
@@ -21,7 +28,7 @@ export type GameStatus = 'idle' | 'playing' | 'paused' | 'gameOver';
 
 export interface GameState {
   snake: Position[];
-  food: Position;
+  food: Food;
   direction: Direction;
   nextDirection: Direction;
   score: number;

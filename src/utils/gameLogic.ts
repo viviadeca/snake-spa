@@ -1,6 +1,6 @@
 // Core game logic utilities
 
-import type { Direction, Position, GameSettings } from '../types/game';
+import type { Direction, Position, GameSettings, Food, FoodType } from '../types/game';
 
 export const INITIAL_SNAKE: Position[] = [
   { x: 10, y: 10 },
@@ -19,6 +19,34 @@ export const DEFAULT_SETTINGS: GameSettings = {
   backgroundColor: '#1f2937',
   soundEnabled: true,
 };
+
+const FOOD_TYPES: FoodType[] = ['apple', 'berry', 'meat', 'cheese'];
+
+function getRandomFoodType(): FoodType {
+  return FOOD_TYPES[Math.floor(Math.random() * FOOD_TYPES.length)];
+}
+
+export function getRandomFood(gridSize: number, snake: Position[]): Food {
+  let position: Position;
+  let attempts = 0;
+  const maxAttempts = gridSize * gridSize;
+
+  do {
+    position = {
+      x: Math.floor(Math.random() * gridSize),
+      y: Math.floor(Math.random() * gridSize),
+    };
+    attempts++;
+  } while (
+    attempts < maxAttempts &&
+    snake.some((segment) => segment.x === position.x && segment.y === position.y)
+  );
+
+  return {
+    position,
+    type: getRandomFoodType(),
+  };
+}
 
 export function getRandomPosition(gridSize: number, snake: Position[]): Position {
   let position: Position;
@@ -83,6 +111,6 @@ export function checkCollision(
     .some((segment) => segment.x === head.x && segment.y === head.y);
 }
 
-export function checkFoodCollision(head: Position, food: Position): boolean {
-  return head.x === food.x && head.y === food.y;
+export function checkFoodCollision(head: Position, food: Food): boolean {
+  return head.x === food.position.x && head.y === food.position.y;
 }
