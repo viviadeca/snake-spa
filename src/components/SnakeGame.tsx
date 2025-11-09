@@ -83,8 +83,13 @@ const SnakeGame = () => {
         const availableWidth = container.clientWidth;
         const availableHeight = container.clientHeight;
         
+        // Reserve space for fullscreen controls (buttons + gap)
+        // Controls are approximately 52px tall + 1rem gap (~16px) + padding = ~100px total
+        const reservedHeight = 100;
+        const availableCanvasHeight = availableHeight - reservedHeight;
+        
         // Calculate the largest square that fits in the viewport
-        const size = Math.min(availableWidth, availableHeight) - 40; // 40px padding
+        const size = Math.min(availableWidth, availableCanvasHeight) - 40; // 40px padding
         setCanvasSize({ width: size, height: size });
       } else {
         setCanvasSize({ width: 600, height: 600 });
