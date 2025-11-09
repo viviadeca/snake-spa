@@ -8,7 +8,7 @@ import {
   INITIAL_SNAKE,
   INITIAL_DIRECTION,
   DEFAULT_SETTINGS,
-  getRandomPosition,
+  generateFood,
   getNextHeadPosition,
   isOppositeDirection,
   checkCollision,
@@ -23,7 +23,7 @@ const SnakeGame = () => {
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [gameState, setGameState] = useState<GameState>({
     snake: INITIAL_SNAKE,
-    food: getRandomPosition(DEFAULT_SETTINGS.gridSize, INITIAL_SNAKE),
+    food: generateFood(DEFAULT_SETTINGS.gridSize, INITIAL_SNAKE),
     direction: INITIAL_DIRECTION,
     nextDirection: INITIAL_DIRECTION,
     score: 0,
@@ -202,8 +202,8 @@ const SnakeGame = () => {
         // Check food collision
         if (checkFoodCollision(newHead, prev.food)) {
           soundManager.play('eat');
-          newScore += 10;
-          newFood = getRandomPosition(settings.gridSize, newSnake);
+          newScore += prev.food.score;
+          newFood = generateFood(settings.gridSize, newSnake);
         } else {
           newSnake.pop(); // Remove tail if no food eaten
           soundManager.play('move');
@@ -276,24 +276,24 @@ const SnakeGame = () => {
     });
 
     // Draw food
-    ctx.fillStyle = settings.foodColor;
-    const foodX = gameState.food.x * cellSize;
-    const foodY = gameState.food.y * cellSize;
-    ctx.beginPath();
-    ctx.arc(
+    const foodX = gameState.food.position.x * cellSize;
+    const foodY = gameState.food.position.y * cellSize;
+    
+    // Draw food emoji
+    ctx.font = `${cellSize * 0.8}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(
+      gameState.food.emoji,
       foodX + cellSize / 2,
-      foodY + cellSize / 2,
-      cellSize / 2 - 2,
-      0,
-      Math.PI * 2
+      foodY + cellSize / 2
     );
-    ctx.fill();
   }, [gameState, settings, canvasSize]);
 
   const startGame = useCallback(() => {
     setGameState({
       snake: INITIAL_SNAKE,
-      food: getRandomPosition(settings.gridSize, INITIAL_SNAKE),
+      food: generateFood(settings.gridSize, INITIAL_SNAKE),
       direction: INITIAL_DIRECTION,
       nextDirection: INITIAL_DIRECTION,
       score: 0,
@@ -311,7 +311,7 @@ const SnakeGame = () => {
   const resetGame = useCallback(() => {
     setGameState({
       snake: INITIAL_SNAKE,
-      food: getRandomPosition(settings.gridSize, INITIAL_SNAKE),
+      food: generateFood(settings.gridSize, INITIAL_SNAKE),
       direction: INITIAL_DIRECTION,
       nextDirection: INITIAL_DIRECTION,
       score: 0,
@@ -503,7 +503,7 @@ const SnakeGame = () => {
               <li>🎮 Use Arrow Keys or WASD to move</li>
               <li>🍎 Eat food to grow and score points</li>
               <li>💥 Avoid walls and your own tail</li>
-              <li>🎯 Each food is worth 10 points</li>
+              <li>🎯 Fruits: 10-15 points, Meats: 20 points</li>
               <li>⛶ Press F to toggle fullscreen</li>
               <li>🔊 Toggle sound effects in Settings</li>
             </ul>
