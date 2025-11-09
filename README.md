@@ -88,12 +88,59 @@ This project is built with React, TypeScript, and Vite, providing a modern and f
 - `npm run build` - Build the project for production
 - `npm run preview` - Preview the production build locally
 - `npm run lint` - Run ESLint to check code quality
+- `npm test` - Run automated tests
+- `npm run test:watch` - Run tests in watch mode for development
+- `npm run test:ui` - Run tests with Vitest UI interface
+- `npm run test:coverage` - Run tests with coverage report
+
+## 🧪 Testing
+
+This project uses [Vitest](https://vitest.dev/) for automated testing, providing fast and reliable unit tests.
+
+### Running Tests
+
+```bash
+# Run all tests once
+npm test
+
+# Run tests in watch mode (reruns on file changes)
+npm run test:watch
+
+# Run tests with UI interface
+npm run test:ui
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Structure
+
+- Test files are located alongside their source files with `.test.ts` or `.test.tsx` extension
+- Current test coverage includes:
+  - **Game Logic** (`src/utils/gameLogic.test.ts`) - Tests for core game mechanics like movement, collision detection, and food placement
+  - **Sound Effects** (`src/utils/soundEffects.test.ts`) - Tests for the sound system and audio management
+
+### Writing Tests
+
+To add new tests, create a file with the `.test.ts` or `.test.tsx` extension next to the file you want to test. For example:
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { yourFunction } from './yourFile';
+
+describe('yourFunction', () => {
+  it('should do something', () => {
+    expect(yourFunction()).toBe(expectedValue);
+  });
+});
+```
 
 ## 🛠️ Tech Stack
 
 - **React 19** - UI library
 - **TypeScript** - Type-safe JavaScript
 - **Vite** - Fast build tool and dev server
+- **Vitest** - Unit testing framework
 - **ESLint** - Code linting and quality checks
 
 ## 📁 Project Structure
