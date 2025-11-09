@@ -378,6 +378,13 @@ const SnakeGame = () => {
                     Play Again
                   </button>
                 )}
+                <button 
+                  onClick={() => setSettings((prev) => ({ ...prev, soundEnabled: !prev.soundEnabled }))}
+                  className="btn btn-secondary"
+                  title={settings.soundEnabled ? 'Disable sound' : 'Enable sound'}
+                >
+                  {settings.soundEnabled ? '🔊' : '🔇'}
+                </button>
                 <button onClick={toggleFullscreen} className="btn btn-secondary btn-exit-fullscreen">
                   Exit Fullscreen (F)
                 </button>
