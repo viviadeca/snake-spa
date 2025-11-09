@@ -2,6 +2,12 @@
 
 Single page app with snake game. My first programming project.
 
+## 🌐 Live Demo
+
+🎮 **[Play the game here!](https://viviadeca.github.io/snake-spa/)**
+
+The app is automatically deployed to GitHub Pages on every push to the main branch.
+
 ## 🚀 Project Setup
 
 This project is built with React, TypeScript, and Vite, providing a modern and fast development experience.
@@ -63,6 +69,26 @@ snake-spa/
 ## 🤝 Contributing
 
 This is a personal learning project. Feel free to fork and experiment!
+
+## 🚀 Deployment
+
+The app is automatically deployed to GitHub Pages using GitHub Actions. The deployment workflow:
+
+1. **Triggers** on every push to the `main` branch
+2. **Builds** the React app using Vite
+3. **Deploys** the built files to GitHub Pages
+
+### Manual Deployment
+
+If you need to deploy manually:
+
+1. Ensure the `base` path in `vite.config.ts` matches your repository name
+2. Build the project: `npm run build`
+3. The `dist` folder contains the production-ready files
+
+### GitHub Pages Configuration
+
+The repository must have GitHub Pages enabled with the source set to "GitHub Actions" in the repository settings under Pages.
 
 ## 📄 License
 
